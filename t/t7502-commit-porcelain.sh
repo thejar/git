@@ -269,40 +269,49 @@ test_expect_success 'cleanup commit messages (scissors option,-F,-e, scissors on
 	git commit --cleanup=scissors -e -F text -a --allow-empty-message &&
 	git cat-file -p HEAD >raw &&
 	sed -e "1,/^\$/d" raw >actual &&
-	test_must_be_empty actual
+	test_must_be_empty actual 
 '
 
 test_expect_success 'cleanup commit messages (scissors option,-F,-e, CR/LF line endings)' '
 
-        echo >>negative &&
-        printf "\r\n# to be kept\r\n" >text &&
-        printf "  # ------------------------ >8 ------------------------\r\n" >>text &&
-        printf "# to be kept, too\r\n" >>text &&
-        printf "# ------------------------ >8 ------------------------\r\n" >>text &&
-        printf "to be removed\r\n" >>text &&
-        printf "to be removed, too \r\n" >>text &&
-        true &&
-        printf "# to be kept\r\n" >expect &&
-        printf "\r\n" >>expect &&
-        printf "# to be kept, too\r\n" >>expect &&
-        git commit --cleanup=scissors -e -F text -a &&
-        git cat-file -p HEAD >raw &&
-        sed -e "1,/^\$/d" raw >actual &&
-        test_cmp expect actual
+	echo >>negative &&
+	test_config core.editor unix2dos &&
+	cat >text <<-\EOF &&
+
+	# to be kept
+
+	   # ------------------------ >8 ------------------------
+	# to be kept, too
+	# ------------------------ >8 ------------------------
+	to be removed
+	# ------------------------ >8 ------------------------
+	to be removed, too
+	EOF
+
+	cat >expect <<-\EOF &&
+	# to be kept
+
+	  # ------------------------ >8 ------------------------
+
+	# to be kept, too
+	EOF
+	cp expect /tmp &&
+	git commit --cleanup=scissors -e -F text -a &&
+	git cat-file -p HEAD >raw &&
+	sed -e "1,/^\$/d" raw >actual &&
+	cp actual /tmp &&
+	test_cmp expect actual
 '
 
 test_expect_success 'cleanup commit messages (scissors option,-F,-e, scissors on first line, CR/LF line endings)' '
 
         echo >>negative &&
         printf "\r\n# ------------------------ >8 ------------------------\r\n" >text &&
-        git commit --cleanup=scissors -e -F text -a --allow-empty-message &&
-        git log -1 >raw &&
-        grep "^# ------------------------ >8 ------------------------$" raw >actual &&
-	echo "CP RAW" &&
-	cp raw /tmp/raw2 &&
-	cp text /tmp/text2 &&
+        git commit --cleanup=scissors -F text -a --allow-empty-message &&
+	git cat-file -p HEAD >raw &&
+	sed -e "1,/^\$/d" raw >actual &&
 	cp actual /tmp/actual2 &&
-        test_must_be_empty actual
+	test_must_be_empty actual
 '
 
 test_expect_success 'cleanup commit messages (strip option,-F)' '
@@ -314,7 +323,6 @@ test_expect_success 'cleanup commit messages (strip option,-F)' '
 	git cat-file -p HEAD >raw &&
 	sed -e "1,/^\$/d" raw >actual &&
 	test_cmp expect actual
-
 '
 
 test_expect_success 'cleanup commit messages (strip option,-F,-e)' '
