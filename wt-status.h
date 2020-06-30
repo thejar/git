@@ -49,6 +49,11 @@ static inline int is_from_cherry_pick(enum commit_whence whence)
 		whence == FROM_CHERRY_PICK_MULTI;
 }
 
+static inline int starts_with_newline(const char *p)
+{
+	return *p == '\n' || (*p == '\r' && p[1] == '\n');
+};
+
 static inline int is_from_rebase(enum commit_whence whence)
 {
 	return whence == FROM_REBASE_PICK;

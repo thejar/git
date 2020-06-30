@@ -22,7 +22,7 @@
 #define AB_DELAY_WARNING_IN_MS (2 * 1000)
 
 static const char cut_line[] =
-"------------------------ >8 ------------------------\n";
+"------------------------ >8 ------------------------";
 
 static char default_wt_status_colors[][COLOR_MAXLEN] = {
 	GIT_COLOR_NORMAL, /* WT_STATUS_HEADER */
@@ -1007,11 +1007,10 @@ size_t wt_status_locate_end(const char *s, size_t len)
 	struct strbuf pattern = STRBUF_INIT;
 
 	strbuf_addf(&pattern, "\n%c %s", comment_line_char, cut_line);
-	strbuf_trim_trailing_newline(&pattern);
-
-	if (starts_with(s, pattern.buf + 1))
+	
+	if (starts_with(s, pattern.buf + 1) && starts_with_newline(s + pattern.len - 1))
 		len = 0;
-	else if ((p = strstr(s, pattern.buf)))
+	else if ((p = strstr(s, pattern.buf)) && starts_with_newline(p + pattern.len))
 		len = p - s + 1;
 	strbuf_release(&pattern);
 	return len;
