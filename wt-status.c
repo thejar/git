@@ -1003,17 +1003,17 @@ conclude:
 
 size_t wt_status_locate_end(const char *s, size_t len)
 {
-	const char *p;
-	struct strbuf pattern = STRBUF_INIT;
+        const char *p;
+        struct strbuf pattern = STRBUF_INIT;
 
-	strbuf_addf(&pattern, "\n%c %s", comment_line_char, cut_line);
-	
-	if (starts_with(s, pattern.buf + 1) && starts_with_newline(s + pattern.len - 1))
-		len = 0;
-	else if ((p = strstr(s, pattern.buf)) && starts_with_newline(p + pattern.len))
-		len = p - s + 1;
-	strbuf_release(&pattern);
-	return len;
+        strbuf_addf(&pattern, "\n%c %s", comment_line_char, cut_line);
+
+        if (starts_with(s, pattern.buf + 1) && starts_with_newline(s + pattern.len - 1))
+                len = 0;
+        else if ((p = strstr(s, pattern.buf)) && starts_with_newline(p + pattern.len))
+                len = p - s + 1;
+        strbuf_release(&pattern);
+        return len;
 }
 
 void wt_status_append_cut_line(struct strbuf *buf)
