@@ -297,7 +297,7 @@ test_expect_success 'cleanup commit messages (scissors option,-F,-e, CR/LF line 
 	git commit --cleanup=scissors -e -F text -a &&
 	git cat-file -p HEAD >raw &&
 	sed -e "1,/^\$/d" raw >actual &&
-	test_cmp expect actual
+	test_cmp expect actual 
 '
 
 test_expect_success 'cleanup commit messages (scissors option,-F,-e, scissors on first line, CR/LF line endings)' '
